@@ -1,0 +1,789 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+
+public class GameMenu {
+
+    //файлы
+
+    static String путь_фона_меню = "C:\\Users\\maxdm\\Downloads\\pexels-mycroft-roxton-2159798803-36302058.jpg";
+    static String путь_иконки_новой_игры = "C:\\Users\\maxdm\\Downloads\\free-png.ru-36.png";
+    static String путь_иконки_настроек = "C:\\Users\\maxdm\\Downloads\\free-icon-setting-9454234.png";
+
+    static String путь_фона_маяка = "C:\\Users\\maxdm\\Downloads\\YYAw9xNP47SNYe5f1_kNc9BYY9PxPqAT91OY2mfz4L35n5KoV5tHStsA_72fOFdGeUk-lEwykEFMFe2m3-fT14Gd (1) (1).png";
+    static String путь_фона_генераторной = "C:\\Users\\maxdm\\Downloads\\5368451675825316067.png";
+    static String путь_фона_двери = "C:\\Users\\maxdm\\Downloads\\5368451675825316068.png";
+
+    // Фонарь включён.
+    static String путь_фона_фонаря_включён = "C:\\Users\\maxdm\\Downloads\\Диптих_ маяк в огне и тьме (2).png";
+
+    // Фонарь выключен.
+    static String путь_фона_фонаря_выключен = "C:\\Users\\maxdm\\Downloads\\Диптих_ маяк в огне и тьме (3).png";
+
+    static String путь_фона_склада = "C:\\Users\\maxdm\\Downloads\\5368451675825316066.png";
+    static String путь_карты = "C:\\Users\\maxdm\\Downloads\\lmDVXctMjrTtISGRl0qqaAqjDVtyYcdpAotuOOzaK7Cikt_S-PDWkwFZ3O6L2DrH7ndvzqY38SatoPT0yyHlVaHNQTLW2g (1).png";
+
+
+    //задание переменных
+
+    static int заряд_батареи = 100;
+
+    static int топливо_генератора = 0;
+
+    static boolean генератор_заправлен = false;
+
+    static boolean генератор_включён = false;
+
+    static boolean маяк_вкл_выкл = false;
+
+    static boolean игра_окончена = false;
+
+    static boolean корабль_ожидает_сопровождения = false;
+
+    static String текущая_комната = "menu";
+
+
+    //еще много переменных
+
+    static JFrame окно_игры;
+    static JPanel панель_игры;
+    static JLabel изображение_комнаты;
+
+    static JLabel надпись_заряда;
+    static JLabel надпись_корабля;
+    static JLabel надпись_топлива;
+
+    static JButton кнопка_новой_игры;
+    static JButton кнопка_настроек;
+
+    static JButton кнопка_генераторной;
+    static JButton кнопка_двери;
+    static JButton кнопка_фонаря;
+    static JButton кнопка_склада;
+    static JButton кнопка_карты;
+    static JButton кнопка_назад;
+
+    static JButton кнопка_заправки;
+    static JButton кнопка_запуска_генератора;
+    static JButton кнопка_включения_фонаря;
+    static JButton кнопка_сопровождения;
+
+    static Timer таймер_игры;
+
+    static Timer таймер_корабля;
+
+
+    public static void main(String[] аргументы) {
+
+        //делаем окно
+        окно_игры = new JFrame("Маяк 17");
+        окно_игры.setSize(1000, 600);
+        окно_игры.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        окно_игры.setLocationRelativeTo(null);
+
+
+        панель_игры = new JPanel();
+        панель_игры.setLayout(null); //таким образом мы сами решаем как расположить объекты лучше
+
+        //делаем изображение для фона ну которое маяк основной
+        изображение_комнаты = new JLabel();
+        изображение_комнаты.setBounds(0, 0, 1000, 600); //коорды штуки
+        панель_игры.add(изображение_комнаты); //фигачим на панель
+
+
+        //тут щас тексты всякие выводиться будут
+        //зарядка
+        надпись_заряда = new JLabel("Заряд: 100%");
+        надпись_заряда.setFont(new Font("Arial", Font.BOLD, 22)); //шрифт и размер типа
+        надпись_заряда.setForeground(Color.WHITE);
+        надпись_заряда.setBounds(20, 15, 250, 35);
+        панель_игры.add(надпись_заряда);
+
+        //корабоооооль
+        надпись_корабля = new JLabel("");
+        надпись_корабля.setFont(new Font("Arial", Font.BOLD, 22));
+        надпись_корабля.setForeground(Color.YELLOW);
+        надпись_корабля.setBounds(20, 50, 700, 40);
+        панель_игры.add(надпись_корабля);
+
+        //топливо
+        надпись_топлива = new JLabel("Топливо генератора: 0%");
+        надпись_топлива.setFont(new Font("Arial", Font.BOLD, 22));
+        надпись_топлива.setForeground(Color.WHITE);
+        надпись_топлива.setBounds(340, 110, 410, 35);
+        панель_игры.add(надпись_топлива);
+
+
+        //тут у нас всякие кнопки будут для работы
+
+        кнопка_новой_игры = mkText("Новая игра", 350, 300, 300, 70);
+        панель_игры.add(кнопка_новой_игры);
+
+        кнопка_настроек = mkText("Настройки", 400, 390, 200, 60);
+        панель_игры.add(кнопка_настроек);
+
+        кнопка_генераторной = mkText("Генераторная", 30, 430, 210, 55);
+        панель_игры.add(кнопка_генераторной);
+
+        кнопка_двери = mkText("Дверь", 260, 430, 150, 55);
+        панель_игры.add(кнопка_двери);
+
+        кнопка_фонаря = mkText("Фонарь", 430, 430, 150, 55);
+        панель_игры.add(кнопка_фонаря);
+
+        кнопка_склада = mkText("Склад", 600, 430, 150, 55);
+        панель_игры.add(кнопка_склада);
+
+        кнопка_карты = mkText("Карта", 780, 430, 170, 55);
+        панель_игры.add(кнопка_карты);
+
+        кнопка_назад = mkText("Назад", 20, 520, 130, 45);
+        панель_игры.add(кнопка_назад);
+
+        кнопка_заправки = mkText("Заправить генератор", 350, 400, 300, 65);
+        панель_игры.add(кнопка_заправки);
+
+        кнопка_запуска_генератора = mkText("Запустить генератор", 350, 320, 300, 65);
+        панель_игры.add(кнопка_запуска_генератора);
+
+        кнопка_включения_фонаря = mkText("Включить фонарь", 350, 400, 300, 65);
+        панель_игры.add(кнопка_включения_фонаря);
+
+        кнопка_сопровождения = mkText("Сопроводить корабль", 330, 400, 340, 65);
+        панель_игры.add(кнопка_сопровождения);
+
+
+        //че видим че не видм в самом начале, потом очевидно от ситации что то меняем
+
+        надпись_заряда.setVisible(false);
+        надпись_корабля.setVisible(false);
+        надпись_топлива.setVisible(false);
+
+        кнопка_генераторной.setVisible(false);
+        кнопка_двери.setVisible(false);
+        кнопка_фонаря.setVisible(false);
+        кнопка_склада.setVisible(false);
+        кнопка_карты.setVisible(false);
+        кнопка_назад.setVisible(false);
+
+        кнопка_заправки.setVisible(false);
+        кнопка_запуска_генератора.setVisible(false);
+        кнопка_включения_фонаря.setVisible(false);
+        кнопка_сопровождения.setVisible(false);
+
+        //убираем фон ну не убираем а он будет находится под нашими кнопками
+        панель_игры.setComponentZOrder(изображение_комнаты, панель_игры.getComponentCount() - 1);
+
+
+        //таймер
+        таймер_корабля = new Timer(10000, new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+
+                if (корабль_ожидает_сопровождения) { //сопроводили или нет мы корааабль
+                    таймер_корабля.stop();
+                    gameOver();
+                }
+            }
+        });
+
+        //таймер не должен повторяться постоянно
+        таймер_корабля.setRepeats(false);
+
+
+        //еще 1 вонючий таймер
+
+        таймер_игры = new Timer(3000, new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+
+                //-1 процент к заряду
+                заряд_батареи--;
+
+                //=новый заряд
+                надпись_заряда.setText("Заряд: " + заряд_батареи + "%");
+
+
+                //генератор
+
+                if (генератор_включён && топливо_генератора > 0) { //смотрим заправлен ли и заведен ли
+                    топливо_генератора--;
+                    if (текущая_комната.equals("generator")) {
+                        надпись_топлива.setText("Топливо генератора: " + топливо_генератора + "%");
+                    }
+
+                    if (топливо_генератора <= 0) {
+                        топливо_генератора = 0;
+                        генератор_включён = false;
+                        turnOffLight();
+                    }
+
+                    else if (Math.random() < 0.15) {
+                        генератор_включён = false;
+                        turnOffLight();
+                    }
+                }
+
+                if (текущая_комната.equals("generator")) {
+
+                    надпись_топлива.setText("Топливо генератора: " + топливо_генератора + "%");
+
+                    кнопка_заправки.setVisible(!генератор_заправлен);
+
+                    кнопка_запуска_генератора.setVisible(генератор_заправлен && !генератор_включён);
+                }
+
+
+                //фонарь
+
+                if (генератор_включён && маяк_вкл_выкл && Math.random() < 0.2) {
+
+                    turnOffLight();
+                }
+
+
+                //приехал корабль
+
+                if (!корабль_ожидает_сопровождения && Math.random() < 0.3) {
+                    shipArrives();
+                }
+
+
+                //если батарейка села
+                if (заряд_батареи <= 0) {
+
+                    заряд_батареи = 0;
+                    надпись_заряда.setText("Заряд: 0%");
+
+                    gameOver();
+                }
+
+                //обновили экран
+                панель_игры.repaint();
+            }
+        });
+
+
+        кнопка_новой_игры.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+                startGame();
+            }
+        });
+
+
+        кнопка_генераторной.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+                openGenerator();
+            }
+        });
+
+        кнопка_двери.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+                room(путь_фона_двери);
+            }
+        });
+
+        кнопка_фонаря.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+                openLantern();
+            }
+        });
+
+        кнопка_склада.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+                room(путь_фона_склада);
+            }
+        });
+
+        кнопка_карты.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+                openMap();
+            }
+        });
+
+        кнопка_назад.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+                showLighthouse();
+            }
+        });
+
+
+        //заправляем генератор
+
+        кнопка_заправки.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+
+                if (генератор_заправлен) {
+                    return;
+                }
+
+                топливо_генератора = 100;
+                генератор_заправлен = true;
+
+                генератор_включён = false;
+
+                надпись_топлива.setText("Топливо генератора: 100%");//обновили надпись
+
+                кнопка_заправки.setVisible(false);//убираем кнопку заправки
+
+                кнопка_запуска_генератора.setVisible(true);
+
+                панель_игры.repaint();
+            }
+        });
+
+
+        кнопка_запуска_генератора.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+
+                if (!генератор_заправлен) {
+                    return;
+                }
+                генератор_включён = true;
+                кнопка_запуска_генератора.setVisible(false);//убираем кнопку запуска
+
+                if (текущая_комната.equals("generator")) {
+                    кнопка_заправки.setVisible(false);
+                }
+                панель_игры.repaint();
+            }
+        });
+
+
+        //фонарь включаем
+
+        кнопка_включения_фонаря.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+
+                if (!генератор_включён) {
+                    return;
+                }
+
+                маяк_вкл_выкл = true;
+
+                изображение_комнаты.setIcon(sbg(путь_фона_фонаря_включён));//меняем выключенный на включенный
+
+                кнопка_включения_фонаря.setVisible(false);
+
+                панель_игры.repaint();
+            }
+        });
+
+
+        //механика сопровождения корабля
+
+        кнопка_сопровождения.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent событие) {
+
+                if (!корабль_ожидает_сопровождения) {
+                    return;
+                }
+
+                if (!маяк_вкл_выкл) {
+                    updateEscortButton();
+                    return;
+                }
+
+                корабль_ожидает_сопровождения = false;//сопроводили
+
+                таймер_корабля.stop();
+
+                надпись_корабля.setText("");
+
+                кнопка_сопровождения.setVisible(false);
+
+                панель_игры.repaint();
+            }
+        });
+
+
+        //проигрыш
+
+        изображение_комнаты.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent событие) {
+
+                if (игра_окончена) {
+                    menu();
+                }
+            }
+        });
+
+        menu();
+
+        окно_игры.add(панель_игры);
+
+        окно_игры.setVisible(true);
+    }
+
+
+    //опять корабль
+    static void shipArrives() {
+
+        корабль_ожидает_сопровождения = true;
+
+        надпись_корабля.setText("ПРИБЫЛ КОРАБЛЬ! Сопроводите его немедленно!");
+
+        if (текущая_комната.equals("map")) {
+            updateEscortButton();
+        }
+
+        таймер_корабля.restart();//через 10 секунд игра окончена если не сопроводить
+
+        панель_игры.repaint();
+    }
+
+
+    static void updateEscortButton() {
+
+        boolean показывать_кнопку = текущая_комната.equals("map") && корабль_ожидает_сопровождения;
+
+        кнопка_сопровождения.setVisible(показывать_кнопку);
+
+        if (показывать_кнопку) {
+
+            //должен быть свет
+            if (маяк_вкл_выкл) {
+                кнопка_сопровождения.setEnabled(true);
+                кнопка_сопровождения.setText("Сопроводить корабль");
+            }
+
+            else {
+                кнопка_сопровождения.setEnabled(false);
+                кнопка_сопровождения.setText("Сначала включите свет!");
+            }
+        }
+
+        панель_игры.repaint();
+    }
+
+
+    //фонарь выключаем
+
+    static void turnOffLight() {
+
+        маяк_вкл_выкл = false;
+
+        if (текущая_комната.equals("lantern")) {
+            изображение_комнаты.setIcon(sbg(путь_фона_фонаря_выключен));
+
+            кнопка_включения_фонаря.setVisible(генератор_включён);
+        }
+
+        if (текущая_комната.equals("map")) {
+            updateEscortButton();
+        }
+
+        панель_игры.repaint();
+    }
+
+
+    //стартовая часть и если перезапуск
+
+    static void startGame() {
+
+        таймер_игры.stop();
+        таймер_корабля.stop();
+
+        заряд_батареи = 100;
+
+        топливо_генератора = 0;
+        генератор_заправлен = false;
+        генератор_включён = false;
+        маяк_вкл_выкл = false;
+        игра_окончена = false;
+        корабль_ожидает_сопровождения = false;
+        надпись_заряда.setText("Заряд: 100%");
+        надпись_корабля.setText("");
+        надпись_топлива.setText("Топливо генератора: 0%");
+        надпись_заряда.setVisible(true);
+        надпись_корабля.setVisible(true);
+        кнопка_новой_игры.setVisible(false);
+        кнопка_настроек.setVisible(false);
+        showLighthouse();
+        таймер_игры.start();
+        панель_игры.repaint();
+    }
+
+
+    //основная комната
+
+    static void showLighthouse() {
+        текущая_комната = "home";
+
+        изображение_комнаты.setIcon(sbg(путь_фона_маяка));
+        изображение_комнаты.setText("");
+        изображение_комнаты.setOpaque(false);
+
+        кнопка_генераторной.setVisible(true);
+        кнопка_двери.setVisible(true);
+        кнопка_фонаря.setVisible(true);
+        кнопка_склада.setVisible(true);
+
+        кнопка_карты.setVisible(true);
+
+        кнопка_назад.setVisible(false);
+
+        кнопка_заправки.setVisible(false);
+        кнопка_запуска_генератора.setVisible(false);
+        кнопка_включения_фонаря.setVisible(false);
+        кнопка_сопровождения.setVisible(false);
+
+        надпись_топлива.setVisible(false);
+
+        панель_игры.repaint();
+    }
+
+
+    //дополнение к генератору
+
+    static void openGenerator() {
+
+        текущая_комната = "generator";
+
+        изображение_комнаты.setIcon(sbg(путь_фона_генераторной));//загрузили изображение
+        изображение_комнаты.setText("");
+
+        hideRooms();
+
+        кнопка_назад.setVisible(true);
+
+        надпись_топлива.setText("Топливо генератора: " + топливо_генератора + "%");
+        надпись_топлива.setVisible(true);
+
+        кнопка_заправки.setVisible(!генератор_заправлен);
+
+        кнопка_запуска_генератора.setVisible(генератор_заправлен && !генератор_включён);
+
+        панель_игры.repaint();
+    }
+
+
+    //комната с фонарем
+
+    static void openLantern() {
+
+        текущая_комната = "lantern";
+
+        hideRooms();
+
+        //темная или светлая комната
+        if (маяк_вкл_выкл) {
+            изображение_комнаты.setIcon(sbg(путь_фона_фонаря_включён));
+        }
+
+        else {
+            изображение_комнаты.setIcon(sbg(путь_фона_фонаря_выключен));
+        }
+
+        изображение_комнаты.setText("");
+
+        кнопка_назад.setVisible(true);//кнопка возврата
+
+        кнопка_включения_фонаря.setVisible(генератор_включён && !маяк_вкл_выкл);
+
+        панель_игры.repaint();
+    }
+
+
+    //стол картографа
+
+    static void openMap() {
+
+        текущая_комната = "map";
+
+        изображение_комнаты.setIcon(sbg(путь_карты));//изображение
+        изображение_комнаты.setText("");
+
+        hideRooms();
+
+        кнопка_назад.setVisible(true);
+
+        updateEscortButton();
+
+        панель_игры.repaint();
+    }
+
+
+    //по такому же принципу 2 оставшиеся комнаты без механик какких то
+    static void room(String путь_к_изображению) {
+
+        if (путь_к_изображению.equals(путь_фона_двери)) {
+            текущая_комната = "door";
+        } else if (путь_к_изображению.equals(путь_фона_склада)) {
+            текущая_комната = "storage";
+        }
+
+        изображение_комнаты.setIcon(sbg(путь_к_изображению));
+        изображение_комнаты.setText("");
+
+        hideRooms();
+
+        кнопка_назад.setVisible(true);
+
+        панель_игры.repaint();
+    }
+
+
+    //скрытие кнопок для различных сценариев
+    static void hideRooms() {
+
+        кнопка_генераторной.setVisible(false);
+        кнопка_двери.setVisible(false);
+        кнопка_фонаря.setVisible(false);
+        кнопка_склада.setVisible(false);
+        кнопка_карты.setVisible(false);
+
+        кнопка_заправки.setVisible(false);
+        кнопка_запуска_генератора.setVisible(false);
+        кнопка_включения_фонаря.setVisible(false);
+        кнопка_сопровождения.setVisible(false);
+
+        надпись_топлива.setVisible(false);
+    }
+
+
+    //значения видимости для проигрыша
+
+    static void gameOver() {
+
+        игра_окончена = true;
+
+        таймер_игры.stop();
+        таймер_корабля.stop();
+
+        надпись_заряда.setVisible(false);
+        надпись_корабля.setVisible(false);
+        надпись_топлива.setVisible(false);
+
+        кнопка_генераторной.setVisible(false);
+        кнопка_двери.setVisible(false);
+        кнопка_фонаря.setVisible(false);
+        кнопка_склада.setVisible(false);
+        кнопка_карты.setVisible(false);
+        кнопка_назад.setVisible(false);
+
+        кнопка_заправки.setVisible(false);
+        кнопка_запуска_генератора.setVisible(false);
+        кнопка_включения_фонаря.setVisible(false);
+        кнопка_сопровождения.setVisible(false);
+
+        изображение_комнаты.setIcon(null);
+
+        изображение_комнаты.setOpaque(true);
+        изображение_комнаты.setBackground(Color.BLACK);
+
+        изображение_комнаты.setHorizontalAlignment(SwingConstants.CENTER);
+        изображение_комнаты.setVerticalAlignment(SwingConstants.CENTER);
+        изображение_комнаты.setForeground(Color.WHITE);
+        изображение_комнаты.setFont(new Font("Arial", Font.BOLD, 30));
+
+        изображение_комнаты.setText("ИГРА ОКОНЧЕНА");
+
+        панель_игры.repaint();
+    }
+
+
+    //меню самой игры
+
+    static void menu() {
+
+        таймер_игры.stop();
+        таймер_корабля.stop();
+
+        заряд_батареи = 100;
+        топливо_генератора = 0;
+        генератор_заправлен = false;
+        генератор_включён = false;
+        маяк_вкл_выкл = false;
+        игра_окончена = false;
+        корабль_ожидает_сопровождения = false;
+        текущая_комната = "menu";
+
+        изображение_комнаты.setText("");
+
+        изображение_комнаты.setOpaque(false);
+        изображение_комнаты.setBackground(null);
+        изображение_комнаты.setHorizontalAlignment(SwingConstants.LEFT);
+        изображение_комнаты.setVerticalAlignment(SwingConstants.CENTER);
+
+        изображение_комнаты.setIcon(sbg(путь_фона_меню));
+
+        //скрываем ненужные окна и кнопки
+        кнопка_новой_игры.setVisible(true);
+        кнопка_настроек.setVisible(true);
+
+        надпись_заряда.setVisible(false);
+        надпись_корабля.setVisible(false);
+        надпись_топлива.setVisible(false);
+
+        кнопка_генераторной.setVisible(false);
+        кнопка_двери.setVisible(false);
+        кнопка_фонаря.setVisible(false);
+        кнопка_склада.setVisible(false);
+        кнопка_карты.setVisible(false);
+        кнопка_назад.setVisible(false);
+
+        кнопка_заправки.setVisible(false);
+        кнопка_запуска_генератора.setVisible(false);
+        кнопка_включения_фонаря.setVisible(false);
+        кнопка_сопровождения.setVisible(false);
+
+        кнопка_сопровождения.setEnabled(true);
+        кнопка_сопровождения.setText("Сопроводить корабль");
+
+        панель_игры.repaint();
+    }
+
+
+    //-
+
+    static ImageIcon sbg(String путь_к_изображению) {
+
+        try {
+
+
+            Image исходное_изображение = ImageIO.read(new File(путь_к_изображению));
+
+
+            if (исходное_изображение == null) {
+                System.out.println("Не удалось прочитать изображение: " + путь_к_изображению);
+                return null;
+            }
+
+            //вгоняем в размер окна
+            Image масштабированное_изображение = исходное_изображение.getScaledInstance(1000, 600, Image.SCALE_SMOOTH);
+
+
+            return new ImageIcon(масштабированное_изображение);
+
+        } catch (IOException ошибка_чтения) {
+
+
+            return null;
+        }
+    }
+
+
+    //в целом создание кнопок
+
+    static JButton mkText(String текст_кнопки, int координата_х, int координата_у, int ширина, int высота) {
+
+        //вызываем
+        JButton созданная_кнопка = new JButton(текст_кнопки);
+
+        //шрифт
+        созданная_кнопка.setFont(new Font("Arial", Font.BOLD, 20));
+
+        созданная_кнопка.setBounds(координата_х, координата_у, ширина, высота);//сткавим коорды
+
+        //косметические поправки
+        созданная_кнопка.setBackground(new Color(35, 35, 35));
+        созданная_кнопка.setForeground(Color.WHITE);
+        созданная_кнопка.setFocusPainted(false);
+        созданная_кнопка.setBorderPainted(true);
+        созданная_кнопка.setOpaque(true);
+
+        return созданная_кнопка;
+    }
+}
