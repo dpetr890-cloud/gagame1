@@ -12,7 +12,7 @@ import java.awt.event.*;
             static String КАРТИНКА_ФОНАРЬ_ВКЛ = "C:\\Users\\maxdm\\Downloads\\Диптих_ маяк в огне и тьме (2).png";
             static String КАРТИНКА_ФОНАРЬ_ВЫКЛ = "C:\\Users\\maxdm\\Downloads\\Диптих_ маяк в огне и тьме (3).png";
             static String КАРТИНКА_КАРТА = "C:\\Users\\maxdm\\Downloads\\lmDVXctMjrTtISGRl0qqaAqjDVtyYcdpAotuOOzaK7Cikt_S-PDWkwFZ3O6L2DrH7ndvzqY38SatoPT0yyHlVaHNQTLW2g (1).png";
-            static final String КАРТИНКА_НАСТРОЙКИ = "C:\\Users\\maxdm\\Downloads\\images-fotor-bg-remover-2026112603530.png";
+            static String КАРТИНКА_НАСТРОЙКИ = "C:\\Users\\maxdm\\Downloads\\images-fotor-bg-remover-2026112603530.png";
 
             //шансы событий (проверяются при каждом тике главного таймера)
             static double ШАНС_ОСТАНОВКИ_ГЕНЕРАТОРА = 0.05;
